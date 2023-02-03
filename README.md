@@ -1,3 +1,5 @@
+Modified version for ESP32 TTGO and Evil Crow v2
+
 # the_good_the_bad_and_the_esp32_FM_transmitter
 a basic low quality ESP32 FM trasnmittor 
 THIS IS A HEADS UP, using RF filters are a must when using this project or angry HAM operators will call the cops on you , i am not lieable if it happens
