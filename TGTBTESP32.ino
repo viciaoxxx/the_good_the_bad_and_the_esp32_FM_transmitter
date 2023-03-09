@@ -7,11 +7,11 @@
 #define ROTARY_ENCODER_STEPS 4
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ROTARY_ENCODER_A_PIN, ROTARY_ENCODER_B_PIN, ROTARY_ENCODER_BUTTON_PIN, -1, ROTARY_ENCODER_STEPS);
 TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
-#define sen 15
+#define sen 1500
 #define outputPin 33
 #define PWMchannel 0
+
 // int samples[128192]; // where N is the number of elements in the array
-const signed char i = samples[i];
 bool loopEnabled = false;
 /*
 FM radio tunner is suposed to set frequency between 88.0 MHz and 104.0 MHz by 0.1MHz steps
@@ -28,7 +28,9 @@ void rotary_onButtonClick()
 {
     static unsigned long lastTimePressed = 0;
     if (millis() - lastTimePressed < 200)
+    {
         return;
+    }
     lastTimePressed = millis();
 
     Serial.print("Radio station set to ");
@@ -53,18 +55,18 @@ void setup()
   ledcAttachPin(outputPin, PWMchannel);
     rotaryEncoder.begin();
     rotaryEncoder.setup(readEncoderISR);
-    rotaryEncoder.setBoundaries(700000, 1100000000, true); //minValue, maxValue, circleValues true|false (when max go to min and vice versa)
+    rotaryEncoder.setBoundaries(7000000, 15000000, true); //minValue, maxValue, circleValues true|false (when max go to min and vice versa)
     rotaryEncoder.setAcceleration(1000000);
-    rotaryEncoder.setEncoderValue(12073030); //set default to 92.1 MHz
+    rotaryEncoder.setEncoderValue(12080000); //set default to 92.1 MHz
     Serial.println("FM Radio");
     Serial.print("Radio station initially set to ");
     Serial.print(getFrequency());
-    Serial.println(" MHz. Tune to some other station like 103.2... and press button ");
     pinMode(ROTARY_ENCODER_BUTTON_PIN, INPUT_PULLUP);
 }
 
 void loop()
 {
+
     if (rotaryEncoder.isEncoderButtonClicked()) {
     // toggle loop state
     loopEnabled = !loopEnabled;
@@ -75,10 +77,12 @@ void loop()
       tft.setCursor(0, 0);
       tft.println("MUERTE FM");
       tft.println(getFrequency());
-      ledcSetup(PWMchannel, (getFrequency() + (samples[i] * sen)*2), 2);
-      ledcWrite(PWMchannel, 3);
+      for(int i = 0; i < 100100; i += 3){
+      ledcSetup(PWMchannel, (rotaryEncoder.readEncoder() + (samples[i] * sen)), 2);
+      ledcWrite(PWMchannel, 2);
       delayMicroseconds(1000000 / sampleRate);
-                    } 
+      }
+        } 
       if (rotaryEncoder.encoderChanged())
         {
             Serial.print(rotaryEncoder.readEncoder());
@@ -93,4 +97,6 @@ void loop()
       ledcWrite(PWMchannel, 0);
       delay(100);
       }
+  
+
 }
